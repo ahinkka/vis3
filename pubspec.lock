@@ -9,6 +9,10 @@ packages:
     description: canvas_query
     source: hosted
     version: "0.2.0"
+  dartemis:
+    description: dartemis
+    source: hosted
+    version: "0.5.1"
   game_loop:
     description: game_loop
     source: hosted
