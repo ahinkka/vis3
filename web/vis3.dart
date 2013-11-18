@@ -76,6 +76,7 @@ void main() {
   
   _world.addSystem(new MovementSystem());
   _world.addSystem(new ForceSystem());
+  _world.addSystem(new ForceMovementSystem());
   
   _world.addSystem(new BackgroundRenderingSystem(canvas));
   _world.addSystem(new NodeRenderingSystem(canvas));

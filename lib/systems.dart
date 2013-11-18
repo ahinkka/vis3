@@ -14,7 +14,12 @@ class MovementSystem extends EntityProcessingSystem {
   void processEntity(Entity entity) {
     Position position = positionMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
-    position.vec = position.vec +  vel.vec * this.world.delta.toDouble();
+    
+    if (vel.vec.length < 0.000025) {
+      return;
+    }
+    
+    position.vec.add(vel.vec * this.world.delta.toDouble());
   }
 }
 
@@ -23,7 +28,7 @@ class ForceSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Weight> weightMapper;
   ComponentMapper<Force> forceMapper;
-
+  
   ForceSystem() : super(Aspect.getAspectForAllOf([Position, Weight, Force]));
 
   void initialize() {
@@ -47,17 +52,16 @@ class ForceSystem extends EntityProcessingSystem {
         Vector2 pos2 = positionMapper.get(e2).vec;
         double w1 = weightMapper.get(e1).value;
         double w2 = weightMapper.get(e2).value;
+        
         forceMapper.get(e1).vec = _force(pos1, w1, pos2, w2);
       }
     }
   }
   
   Vector2 _force(Vector2 pos1, double w1, Vector2 pos2, double w2) {
-    Vector2 distance = pos1.clone() - pos2;
+    Vector2 distance = pos1 - pos2;
     double magnitude = w1 * w2 / distance.length2;
-    print(magnitude.toString());
-    print(distance.normalized().toString());
-    return distance.normalized() * magnitude;
+    return distance.normalize() * magnitude;
   }
   
   void processEntity(Entity entity) {
@@ -81,6 +85,7 @@ class ForceMovementSystem extends EntityProcessingSystem {
     Force force = forceMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
-    vel.vec = force.vec * this.world.delta;
+    // vel.vec.scale(0.1);
+    vel.vec = force.vec * ((this.world.delta.toDouble() / 1000) / 10000);
   }
 }
