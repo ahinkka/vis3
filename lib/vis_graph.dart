@@ -44,8 +44,8 @@ class VEdge extends Edge with Layoutable, Drawable {
   }
 
   void draw(CanvasElement canvas) {
-    Vector2 from = this.from.canvasLocation();
-    Vector2 to = this.to.canvasLocation();
+    // Vector2 from = this.from.canvasLocation();
+    // Vector2 to = this.to.canvasLocation();
   }
   
   void update(double deltaSecs) {
