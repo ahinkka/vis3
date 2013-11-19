@@ -24,12 +24,12 @@ class MovementSystem extends EntityProcessingSystem {
 }
 
 
-class ForceSystem extends EntityProcessingSystem {
+class RepulsionSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Weight> weightMapper;
   ComponentMapper<Force> forceMapper;
   
-  ForceSystem() : super(Aspect.getAspectForAllOf([Position, Weight, Force]));
+  RepulsionSystem() : super(Aspect.getAspectForAllOf([Position, Weight, Force]));
 
   void initialize() {
     positionMapper = new ComponentMapper<Position>(Position, world);
@@ -62,6 +62,62 @@ class ForceSystem extends EntityProcessingSystem {
     Vector2 distance = pos1 - pos2;
     double magnitude = w1 * w2 / distance.length2;
     return distance.normalize() * magnitude;
+  }
+  
+  void processEntity(Entity entity) {
+    // NOP
+  }
+}
+
+
+class SpringSystem extends EntityProcessingSystem {
+  ComponentMapper<Position> positionMapper;
+  ComponentMapper<Force> forceMapper;
+  ComponentMapper<CEdge> edgeMapper;
+  
+  double _k = 0.5;
+  double _len = 15.0;
+  
+  SpringSystem() : super(Aspect.getAspectForAllOf([Position, Force, CEdge]));
+
+  void initialize() {
+    positionMapper = new ComponentMapper<Position>(Position, world);
+    forceMapper = new ComponentMapper<Force>(Force, world);
+    edgeMapper = new ComponentMapper<CEdge>(CEdge, world);
+  }
+  
+  void processEntities(ReadOnlyBag<Entity> entities) {
+    for (int i=0; i<entities.size; i++) {
+      Entity e = entities[i];
+      Edge edge = edgeMapper.get(e).edge;
+      
+      Entity from = edge.from.entity;
+      Entity to = edge.to.entity;
+
+      Vector2 ePos = positionMapper.get(e).vec;
+      Vector2 n1Pos = positionMapper.get(from).vec;
+      Vector2 n2Pos = positionMapper.get(to).vec;
+      
+      forceMapper.get(from).vec.add(_force(n1Pos, ePos));
+      forceMapper.get(e).vec.add(_force(ePos, n1Pos));
+      
+      forceMapper.get(to).vec.add(_force(n2Pos, ePos));
+      forceMapper.get(e).vec.add(_force(ePos, n2Pos));
+    }
+  }
+  
+  Vector2 _force(pos1, pos2) {
+    Vector2 path = pos2 - pos1;
+    double distance = path.length;
+
+    if (distance < 0.1) {
+      distance = 0.1;
+    }
+
+    double dk = (distance - _len);
+    double scale = (-dk * _k) / distance;
+    
+    return path.scaled(scale);
   }
   
   void processEntity(Entity entity) {

@@ -30,24 +30,26 @@ void gameLoop(num now) {
   window.animationFrame.then(gameLoop);
 }
 
-void createNode(Node node) {
+void createNode(Node node, Vector2 pos) {
   Entity result = _world.createEntity();
-  result.addComponent(new Position(rndVec()));
+  result.addComponent(new Position(pos));
   result.addComponent(new Velocity(new Vector2(0.0, 0.0)));
   result.addComponent(new Force(new Vector2(0.0, 0.0)));
   result.addComponent(new Weight(1.0));
   result.addComponent(new CNode(node));
   result.addToWorld();
+  node.entity = result;
 }
 
-void createEdge(Edge edge) {
+void createEdge(Edge edge, Vector2 pos) {
   Entity result = _world.createEntity();
-  result.addComponent(new Position(rndVec()));
+  result.addComponent(new Position(pos));
   result.addComponent(new Velocity(new Vector2(0.0, 0.0)));
   result.addComponent(new Force(new Vector2(0.0, 0.0)));
   result.addComponent(new Weight(1.0));
   result.addComponent(new CEdge(edge));
   result.addToWorld();
+  edge.entity = result;
 }
 
 void main() {
@@ -57,9 +59,14 @@ void main() {
   Node foo = new Node("foo");
   Node bar = new Node("bar");
   Node baz = new Node("baz");
+
   Edge spam = new Edge(foo, bar, 1.0);
   foo.edges.add(spam);
   bar.edges.add(spam);
+
+  Edge ham = new Edge(bar, baz, 1.0);
+  bar.edges.add(ham);
+  baz.edges.add(ham);
   
   /*
   Graph g = new Graph();
@@ -68,14 +75,16 @@ void main() {
   g.nodes.add(baz);
   */
 
-  createNode(foo);
-  createNode(bar);
-  createNode(baz);
+  createNode(foo, new Vector2(0.0, 0.1));
+  createNode(bar, new Vector2(0.0, 0.2));
+  createNode(baz, new Vector2(0.0, 0.3));
   
-  createEdge(spam);
+  createEdge(spam, new Vector2(0.0, 0.15));
+  createEdge(ham, new Vector2(0.0, 0.25));
   
   _world.addSystem(new MovementSystem());
-  _world.addSystem(new ForceSystem());
+  _world.addSystem(new RepulsionSystem());
+  // _world.addSystem(new SpringSystem());
   _world.addSystem(new ForceMovementSystem());
   
   _world.addSystem(new BackgroundRenderingSystem(canvas));

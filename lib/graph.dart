@@ -1,9 +1,13 @@
 library vis3_graph;
 
+import 'package:dartemis/dartemis.dart' show Entity;
+
 
 class Node {
   String name;
   List<Edge> edges = new List();
+  
+  Entity entity;
   
   Node(this.name);
 
@@ -17,6 +21,8 @@ class Edge {
   Node from;
   Node to;
   double weight;
+  
+  Entity entity;
   
   Edge(this.from, this.to, this.weight);
   
