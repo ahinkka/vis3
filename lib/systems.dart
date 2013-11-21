@@ -69,7 +69,7 @@ class RepulsionSystem extends EntityProcessingSystem {
   Vector2 _force(Vector2 pos1, double w1, Vector2 pos2, double w2) {
     Vector2 distance = pos1 - pos2;
     double magnitude = w1 * w2 / distance.length2;
-    return distance.normalize() * magnitude;
+    return distance.normalize() * magnitude * 15.0;
   }
 
   
@@ -113,7 +113,7 @@ class SpringSystem extends EntityProcessingSystem {
   }
   
   double _k = 0.0001;
-  double _len = 50.0;
+  double _len = 75.0;
   
   /**
    * F = –kx
@@ -151,6 +151,9 @@ class SpringSystem extends EntityProcessingSystem {
 class ForceMovementSystem extends EntityProcessingSystem {
   ComponentMapper<Force> forceMapper;
   ComponentMapper<Velocity> velocityMapper;
+  
+  double _minVelocity = 0.01;
+  double _maxVelocity = 0.25;
 
   ForceMovementSystem() : super(Aspect.getAspectForAllOf([Force, Velocity]));
 
@@ -166,8 +169,11 @@ class ForceMovementSystem extends EntityProcessingSystem {
     vel.vec.scale(0.75);
     vel.vec = vel.vec.add(force.vec * this.world.delta.toDouble() / 100.0);
     
-    if (vel.vec.length > 0.75) {
-      vel.vec.normalize().scale(0.75);
+    // Upper bound for velocity
+    if (vel.vec.length > _maxVelocity) {
+      vel.vec.normalize().scale(_maxVelocity);
+    } else if (vel.vec.length < _minVelocity) {
+      vel.vec.setValues(0.0, 0.0);
     }
   }
 }

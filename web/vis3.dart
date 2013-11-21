@@ -28,8 +28,10 @@ void gameLoop([num now]) {
   
   _world.process();
   
-  // window.animationFrame.then(gameLoop);
-  Timer t = new Timer(const Duration(milliseconds: 100), gameLoop);
+  // TODO: use window.animationFrame only when something's moving
+  window.animationFrame.then(gameLoop);
+  // TODO: use Timer when something isn't moving
+  // Timer t = new Timer(const Duration(milliseconds: 100), gameLoop);
 }
 
 void createNode(Node node, Vector2 pos) {
