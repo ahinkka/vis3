@@ -94,8 +94,8 @@ void main() {
   _world.addSystem(new ForceMovementSystem());
   
   _world.addSystem(new BackgroundRenderingSystem(canvas));
-  _world.addSystem(new NodeRenderingSystem(canvas));
   _world.addSystem(new EdgeRenderingSystem(canvas));
+  _world.addSystem(new NodeRenderingSystem(canvas));
   _world.initialize();
   
 

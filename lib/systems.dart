@@ -29,6 +29,8 @@ class RepulsionSystem extends EntityProcessingSystem {
   ComponentMapper<Weight> weightMapper;
   ComponentMapper<Force> forceMapper;
   
+  double _forceMultiplier = 35.0;
+  
   RepulsionSystem() : super(Aspect.getAspectForAllOf([Position, Weight, Force]));
 
   void initialize() {
@@ -69,7 +71,7 @@ class RepulsionSystem extends EntityProcessingSystem {
   Vector2 _force(Vector2 pos1, double w1, Vector2 pos2, double w2) {
     Vector2 distance = pos1 - pos2;
     double magnitude = w1 * w2 / distance.length2;
-    return distance.normalize() * magnitude * 15.0;
+    return distance.normalize() * magnitude * _forceMultiplier;
   }
 
   

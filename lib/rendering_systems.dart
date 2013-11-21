@@ -18,11 +18,8 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     CNode cNode = nodeMapper.get(entity);
     Node node = cNode.node;
     
-    int width = canvas.canvas.width;
-    int height = canvas.canvas.height;
-    
-    int centerX = width ~/ 2;
-    int centerY = width ~/2;
+    int centerX = canvas.canvas.width ~/ 2;
+    int centerY = canvas.canvas.height ~/2;
     
     int x = centerX + pos.vec.x.toInt();
     int y = centerY + pos.vec.y.toInt();
@@ -67,6 +64,36 @@ class EdgeRenderingSystem extends EntityProcessingSystem {
     Position pos = positionMapper.get(entity);
     CEdge cEdge = edgeMapper.get(entity);
     Edge edge = cEdge.edge;
+    
+    Entity from = edge.from.entity;
+    Entity to = edge.to.entity;
+
+    Vector2 n1Pos = positionMapper.get(from).vec;
+    Vector2 n2Pos = positionMapper.get(to).vec;
+
+    _renderEdge(pos.vec, n1Pos, n2Pos);
+  }
+  
+  _renderEdge(Vector2 edgeCenter, Vector2 node1Position, Vector2 node2Position) {
+    int centerX = canvas.canvas.width ~/ 2;
+    int centerY = canvas.canvas.height ~/ 2;
+    
+    int x = centerX + edgeCenter.x.toInt();
+    int y = centerY + edgeCenter.y.toInt();
+    
+    canvas.save();
+    
+    canvas
+      ..fillStyle = '#000000'
+      ..beginPath()
+      ..moveTo(centerX + node1Position.x.toInt(), centerY + node1Position.y.toInt())
+      ..lineTo(x, y)
+      ..lineTo(centerX + node2Position.x.toInt(), centerY + node2Position.y.toInt())
+      ..closePath()
+      ..stroke();
+    
+    canvas.restore();
+
   }
 
   /*
