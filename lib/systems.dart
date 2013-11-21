@@ -15,9 +15,9 @@ class MovementSystem extends EntityProcessingSystem {
     Position position = positionMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
-    if (vel.vec.length < 0.000025) {
-      return;
-    }
+    // if (vel.vec.length < 0.025) {
+    //   return;
+    // }
     
     position.vec.add(vel.vec * this.world.delta.toDouble());
   }
@@ -38,6 +38,12 @@ class RepulsionSystem extends EntityProcessingSystem {
   }
   
   void processEntities(ReadOnlyBag<Entity> entities) {
+    // First reset all
+    for (int i=0; i<entities.size; i++) {
+      forceMapper.get(entities[i]).vec.setValues(0.0, 0.0);
+    }
+
+    // Start adding forces, one by one, iterating all components
     for (int i=0; i<entities.size; i++) {
       Entity e1 = entities[i];
       
@@ -53,7 +59,9 @@ class RepulsionSystem extends EntityProcessingSystem {
         double w1 = weightMapper.get(e1).value;
         double w2 = weightMapper.get(e2).value;
         
-        forceMapper.get(e1).vec = _force(pos1, w1, pos2, w2);
+        Vector2 e1Vec = forceMapper.get(e1).vec;
+        Vector2 force = _force(pos1, w1, pos2, w2);
+        e1Vec.add(force);
       }
     }
   }
@@ -63,6 +71,7 @@ class RepulsionSystem extends EntityProcessingSystem {
     double magnitude = w1 * w2 / distance.length2;
     return distance.normalize() * magnitude;
   }
+
   
   void processEntity(Entity entity) {
     // NOP
@@ -74,9 +83,6 @@ class SpringSystem extends EntityProcessingSystem {
   ComponentMapper<Position> positionMapper;
   ComponentMapper<Force> forceMapper;
   ComponentMapper<CEdge> edgeMapper;
-  
-  double _k = 0.5;
-  double _len = 15.0;
   
   SpringSystem() : super(Aspect.getAspectForAllOf([Position, Force, CEdge]));
 
@@ -106,18 +112,34 @@ class SpringSystem extends EntityProcessingSystem {
     }
   }
   
+  double _k = 0.0001;
+  double _len = 50.0;
+  
+  /**
+   * F = –kx
+   *  where
+   *   the minus sign shows that this force is in the opposite direction of
+   *   the force that’s stretching or compressing the spring
+   *   
+   *   k is called spring constant, which measures how stiff and strong the
+   *   spring is
+   *   
+   *   x is the distance the spring is stretched or compressed away from its
+   *   equilibrium or rest position
+   */
   Vector2 _force(pos1, pos2) {
-    Vector2 path = pos2 - pos1;
-    double distance = path.length;
+    Vector2 direction = pos1 - pos2;
+    double distance = direction.length;
 
-    if (distance < 0.1) {
-      distance = 0.1;
+    if (distance < _len) {
+      return new Vector2(0.0, 0.0);
     }
-
-    double dk = (distance - _len);
-    double scale = (-dk * _k) / distance;
     
-    return path.scaled(scale);
+    double deltaLength = distance - _len;
+    double scale = deltaLength * _k;
+
+    Vector2 result = direction.normalize().scale(-1.0).scaled(scale);
+    return result;
   }
   
   void processEntity(Entity entity) {
@@ -141,7 +163,11 @@ class ForceMovementSystem extends EntityProcessingSystem {
     Force force = forceMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
-    // vel.vec.scale(0.1);
-    vel.vec = force.vec * ((this.world.delta.toDouble() / 1000) / 10000);
+    vel.vec.scale(0.75);
+    vel.vec = vel.vec.add(force.vec * this.world.delta.toDouble() / 100.0);
+    
+    if (vel.vec.length > 0.75) {
+      vel.vec.normalize().scale(0.75);
+    }
   }
 }

@@ -21,8 +21,11 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     int width = canvas.canvas.width;
     int height = canvas.canvas.height;
     
-    int x = (width * pos.vec.x).toInt();
-    int y = (height * pos.vec.y).toInt();
+    int centerX = width ~/ 2;
+    int centerY = width ~/2;
+    
+    int x = centerX + pos.vec.x.toInt();
+    int y = centerY + pos.vec.y.toInt();
     
     cq(canvas)..fillStyle = '#ff0000'
         ..fillText(node.name, x, y);
