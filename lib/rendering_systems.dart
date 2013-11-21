@@ -27,8 +27,26 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     int x = centerX + pos.vec.x.toInt();
     int y = centerY + pos.vec.y.toInt();
     
-    cq(canvas)..fillStyle = '#ff0000'
-        ..fillText(node.name, x, y);
+    _renderNode(node, x, y);
+  }
+  
+  void _renderNode(Node node, int x, int y) {
+    canvas.save();
+    
+    canvas..textBaseline = "top"
+        ..lineWidth = 10
+        ..strokeStyle = 'black'
+        ..font = '16pt Arial';
+
+    Rectangle textBounds = canvas.textBoundaries(node.name);
+    
+    canvas..fillStyle = '#ff0000'
+      ..fillRect(x, y, textBounds.width + 20, textBounds.height + 20);
+    
+    canvas..fillStyle = '#000000'
+        ..fillText(node.name, x + 10, y + 10);
+    
+    canvas.restore();
   }
 }
 
