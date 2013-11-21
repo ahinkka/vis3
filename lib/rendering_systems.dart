@@ -24,26 +24,46 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     int x = centerX + pos.vec.x.toInt();
     int y = centerY + pos.vec.y.toInt();
     
-    _renderNode(node, x, y);
+    Rectangle bounds = _bounds(node, x, y);
+    _renderBackground(bounds);
+    _renderText(node, bounds);
   }
   
-  void _renderNode(Node node, int x, int y) {
+  void _renderText(Node node, Rectangle bounds) {
     canvas.save();
+    _setNodeTextOptions();
+    canvas..fillStyle = '#000000'
+        ..fillText(node.name, bounds.left + _padding, bounds.top + _padding);
+    canvas.restore();
+  }
+  
+  void _renderBackground(Rectangle bounds) {
+    canvas.save();
+    canvas..fillStyle = '#ff0000'
+        ..fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
+    canvas.restore();
+  }
+  
+  int _padding = 10;
+  Rectangle _bounds(Node node, int x, int y) {
+    canvas.save();
+    _setNodeTextOptions();
+    Rectangle textBounds = canvas.textBoundaries(node.name);
+    canvas.restore();
     
+    int width = textBounds.width.toInt() + 2 * _padding;
+    int height = textBounds.height.toInt() + 2 * _padding;
+    
+    int left = x - width ~/ 2;
+    int top = y - height ~/ 2;
+    return new Rectangle(left, top, width, height);
+  }
+  
+  void _setNodeTextOptions() {
     canvas..textBaseline = "top"
         ..lineWidth = 10
         ..strokeStyle = 'black'
         ..font = '16pt Arial';
-
-    Rectangle textBounds = canvas.textBoundaries(node.name);
-    
-    canvas..fillStyle = '#ff0000'
-      ..fillRect(x, y, textBounds.width + 20, textBounds.height + 20);
-    
-    canvas..fillStyle = '#000000'
-        ..fillText(node.name, x + 10, y + 10);
-    
-    canvas.restore();
   }
 }
 
