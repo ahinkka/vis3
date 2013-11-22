@@ -107,7 +107,6 @@ class EdgeRenderingSystem extends EntityProcessingSystem {
       ..fillStyle = '#000000'
       ..beginPath()
       ..moveTo(centerX + node1Position.x.toInt(), centerY + node1Position.y.toInt())
-      ..lineTo(x, y)
       ..lineTo(centerX + node2Position.x.toInt(), centerY + node2Position.y.toInt())
       ..closePath()
       ..stroke();
