@@ -1,6 +1,7 @@
 library vis3_entity_system;
 
 import 'dart:math' show Rectangle;
+import 'dart:html' show CanvasGradient;
 import 'package:dartemis/dartemis.dart';
 import 'package:vector_math/vector_math.dart';
 import 'package:canvas_query/canvas_query.dart';

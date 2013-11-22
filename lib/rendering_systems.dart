@@ -109,76 +109,58 @@ class EdgeRenderingSystem extends EntityProcessingSystem {
     Vector2 n1Pos = positionMapper.get(from).vec;
     Vector2 n2Pos = positionMapper.get(to).vec;
 
-    _renderEdge(pos.vec, n1Pos, n2Pos);
+    double centerX = canvas.canvas.width / 2;
+    double centerY = canvas.canvas.height / 2;
+    
+    _renderBezierVector(pos.vec + new Vector2(centerX, centerY),
+        n1Pos + new Vector2(centerX, centerY),
+        n2Pos + new Vector2(centerX, centerY));
   }
   
-  _renderEdge(Vector2 edgeCenter, Vector2 node1Position, Vector2 node2Position) {
-    int centerX = canvas.canvas.width ~/ 2;
-    int centerY = canvas.canvas.height ~/ 2;
-    
-    int x = centerX + edgeCenter.x.toInt();
-    int y = centerY + edgeCenter.y.toInt();
-    
+  _renderLine(Vector2 center, Vector2 from, Vector2 to) {
     canvas.save();
     
     canvas
       ..fillStyle = '#000000'
       ..beginPath()
-      ..moveTo(centerX + node1Position.x.toInt(), centerY + node1Position.y.toInt())
-      ..lineTo(centerX + node2Position.x.toInt(), centerY + node2Position.y.toInt())
+      ..moveTo(from.x, from.y)
+      ..lineTo(center.x, center.y)
+      ..lineTo(to.x, to.y)
       ..closePath()
       ..stroke();
     
     canvas.restore();
-
   }
-
-  /*
-  void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
-    CircularBody body = bodyMapper.get(entity);
-    Status status = statusMapper.getSafe(entity);
-
-    context.save();
-
-    try {
-      context.lineWidth = 0.5;
-      context.fillStyle = body.color;
-      context.strokeStyle = body.color;
-      if (null != status && status.invisible) {
-        if (status.invisiblityTimer % 600 < 300) {
-          context.globalAlpha = 0.4;
-        }
-      }
-
-      drawCirle(pos, body);
-
-      if (pos.x + body.radius > MAXWIDTH) {
-        drawCirle(pos, body, offsetX : -MAXWIDTH);
-      } else if (pos.x - body.radius < 0) {
-        drawCirle(pos, body, offsetX : MAXWIDTH);
-      }
-      if (pos.y + body.radius > MAXHEIGHT) {
-        drawCirle(pos, body, offsetY : -MAXHEIGHT);
-      } else if (pos.y - body.radius < 0) {
-        drawCirle(pos, body, offsetY : MAXHEIGHT);
-      }
-
-
-      context.stroke();
-    } finally {
-      context.restore();
-    }
+  
+  Vector2 _normal(Vector2 vec) {
+    return new Vector2(-vec.y, vec.x);
   }
+  
+  _renderBezierVector(Vector2 center, Vector2 from, Vector2 to) {
+    double px = 2 * (center.x - 0.25 * from.x - 0.25 * to.x);
+    double py = 2 * (center.y - 0.25 * from.y - 0.25 * to.y);
 
-  void drawCirle(Position pos, CircularBody body, {int offsetX : 0, int offsetY : 0}) {
-    context.beginPath();
-
-    context.arc(pos.x + offsetX, pos.y + offsetY, body.radius, 0, PI * 2, false);
-
-    context.closePath();
-    context.fill();
-  } */
+    Vector2 endNormal = _normal(to.scaled(1 / to.length));
+    Vector2 endLeft = to -  endNormal.scaled(3.0);
+    Vector2 endRight = to + endNormal.scaled(3.0);
+    
+    canvas.save();
+    
+    CanvasGradient gradient = canvas.createLinearGradient(from.x, from.y, to.x, to.y);
+    gradient.addColorStop(0, '#ccc');
+    gradient.addColorStop(1, '#000');
+    
+    canvas
+      ..fillStyle = gradient
+      ..beginPath()
+      ..moveTo(from.x, from.y)
+      ..bezierCurveTo(px, py, endLeft.x, endLeft.y, endLeft.x, endLeft.y)
+      ..lineTo(endRight.x, endRight.y)
+      ..bezierCurveTo(px, py, from.x, from.y, from.x, from.y)
+      ..closePath()
+      ..fill();
+    canvas.restore();
+  }
 }
 
 
