@@ -36,11 +36,29 @@ class NodeRenderingSystem extends EntityProcessingSystem {
         ..fillText(node.name, bounds.left + _padding, bounds.top + _padding);
     canvas.restore();
   }
-  
+
+  int _roundRadius = 15;
   void _renderBackground(Rectangle bounds) {
+    int r = _roundRadius;
+    int left = bounds.left;
+    int right = bounds.left + bounds.width;
+    int top = bounds.top;
+    int bottom = bounds.top + bounds.height;
+    
     canvas.save();
     canvas..fillStyle = '#ff0000'
-        ..fillRect(bounds.left, bounds.top, bounds.width, bounds.height);
+        ..beginPath()
+        ..moveTo(left + r, top)
+        ..lineTo(right - r, top)
+        ..arcTo(right, top, right, top + r, r)
+        ..lineTo(right, bottom - r)
+        ..arcTo(right, bottom, right - r, bottom, r)
+        ..lineTo(left + r, bottom)
+        ..arcTo(left, bottom, left, bottom - r, r)
+        ..lineTo(left, top + r)
+        ..arcTo(left, top, left + r, top, r)
+        ..closePath()
+        ..fill();
     canvas.restore();
   }
   
