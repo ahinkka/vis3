@@ -29,7 +29,7 @@ class RepulsionSystem extends EntityProcessingSystem {
   ComponentMapper<Weight> weightMapper;
   ComponentMapper<Force> forceMapper;
   
-  double _forceMultiplier = 35.0;
+  double _forceMultiplier = 50.0;
   
   RepulsionSystem() : super(Aspect.getAspectForAllOf([Position, Weight, Force]));
 
@@ -154,7 +154,7 @@ class ForceMovementSystem extends EntityProcessingSystem {
   ComponentMapper<Force> forceMapper;
   ComponentMapper<Velocity> velocityMapper;
   
-  double _minVelocity = 0.01;
+  double _minVelocity = 0.002;
   double _maxVelocity = 0.25;
 
   ForceMovementSystem() : super(Aspect.getAspectForAllOf([Force, Velocity]));

@@ -50,7 +50,7 @@ void createEdge(Edge edge, Vector2 pos) {
   result.addComponent(new Position(pos));
   result.addComponent(new Velocity(new Vector2(0.0, 0.0)));
   result.addComponent(new Force(new Vector2(0.0, 0.0)));
-  result.addComponent(new Weight(1.0));
+  result.addComponent(new Weight(0.3));
   result.addComponent(new CEdge(edge));
   result.addToWorld();
   edge.entity = result;

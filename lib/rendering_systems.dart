@@ -46,7 +46,7 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     int bottom = bounds.top + bounds.height;
     
     canvas.save();
-    canvas..fillStyle = '#ff0000'
+    canvas..fillStyle = '#d3f7a9'
         ..beginPath()
         ..moveTo(left + r, top)
         ..lineTo(right - r, top)
