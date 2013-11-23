@@ -39,11 +39,15 @@ class MouseInputSystem extends EntityProcessingSystem {
   }
   
   void handleMouseDown(MouseEvent event) {
-    down = true;
+    if (event.button == 0) {
+      down = true;
+    }
   }
   
   void handleMouseUp(MouseEvent event) {
-    down = false;
+    if (event.button == 0) {
+      down = false;
+    }
   }
   
   void handleMouseOver(MouseEvent event) {
