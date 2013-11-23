@@ -1,18 +1,18 @@
 part of vis3_entity_system;
 
 class MovementSystem extends EntityProcessingSystem {
-  ComponentMapper<LayoutOptions> positionMapper;
+  ComponentMapper<LayoutOptions> layoutMapper;
   ComponentMapper<Velocity> velocityMapper;
 
   MovementSystem() : super(Aspect.getAspectForAllOf([LayoutOptions, Velocity]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
+    layoutMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
     velocityMapper = new ComponentMapper<Velocity>(Velocity, world);
   }
 
   void processEntity(Entity entity) {
-    LayoutOptions position = positionMapper.get(entity);
+    LayoutOptions position = layoutMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
     if (!position.highlight) {
@@ -23,7 +23,7 @@ class MovementSystem extends EntityProcessingSystem {
 
 
 class RepulsionSystem extends EntityProcessingSystem {
-  ComponentMapper<LayoutOptions> positionMapper;
+  ComponentMapper<LayoutOptions> layoutMapper;
   ComponentMapper<Weight> weightMapper;
   ComponentMapper<Force> forceMapper;
   
@@ -32,7 +32,7 @@ class RepulsionSystem extends EntityProcessingSystem {
   RepulsionSystem() : super(Aspect.getAspectForAllOf([LayoutOptions, Weight, Force]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
+    layoutMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
     weightMapper = new ComponentMapper<Weight>(Weight, world);
     forceMapper = new ComponentMapper<Force>(Force, world);
   }
@@ -54,8 +54,8 @@ class RepulsionSystem extends EntityProcessingSystem {
         
         Entity e2 = entities[j];
         
-        Vector2 pos1 = positionMapper.get(e1).pos;
-        Vector2 pos2 = positionMapper.get(e2).pos;
+        Vector2 pos1 = layoutMapper.get(e1).pos;
+        Vector2 pos2 = layoutMapper.get(e2).pos;
         double w1 = weightMapper.get(e1).value;
         double w2 = weightMapper.get(e2).value;
         
@@ -80,14 +80,14 @@ class RepulsionSystem extends EntityProcessingSystem {
 
 
 class SpringSystem extends EntityProcessingSystem {
-  ComponentMapper<LayoutOptions> positionMapper;
+  ComponentMapper<LayoutOptions> layoutMapper;
   ComponentMapper<Force> forceMapper;
   ComponentMapper<CEdge> edgeMapper;
   
   SpringSystem() : super(Aspect.getAspectForAllOf([LayoutOptions, Force, CEdge]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
+    layoutMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
     forceMapper = new ComponentMapper<Force>(Force, world);
     edgeMapper = new ComponentMapper<CEdge>(CEdge, world);
   }
@@ -100,9 +100,9 @@ class SpringSystem extends EntityProcessingSystem {
       Entity from = edge.from.entity;
       Entity to = edge.to.entity;
 
-      Vector2 ePos = positionMapper.get(e).pos;
-      Vector2 n1Pos = positionMapper.get(from).pos;
-      Vector2 n2Pos = positionMapper.get(to).pos;
+      Vector2 ePos = layoutMapper.get(e).pos;
+      Vector2 n1Pos = layoutMapper.get(from).pos;
+      Vector2 n2Pos = layoutMapper.get(to).pos;
       
       forceMapper.get(from).vec.add(_force(n1Pos, ePos));
       forceMapper.get(e).vec.add(_force(ePos, n1Pos));
