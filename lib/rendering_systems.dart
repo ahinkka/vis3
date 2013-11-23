@@ -28,8 +28,6 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     Rectangle textBounds = _textBounds(node, x, y);
     Rectangle bounds = _bounds(node, x, y);
     
-    // print("Node: ${node.name}; pos: (${x}, ${y}");
-
     canvas.save();
     canvas.translate(x, y);
     _renderBackground(bounds, opts.highlight);

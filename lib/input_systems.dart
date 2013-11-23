@@ -9,8 +9,8 @@ class MouseInputSystem extends EntityProcessingSystem {
   
   bool down = false;
   bool over = false;
-  int x = -1;
-  int y = -1;
+  num x = -1;
+  num y = -1;
   
   MouseInputSystem(this.canvas) : super(Aspect.getAspectForAllOf([LayoutOptions, CNode]));
   
@@ -35,8 +35,6 @@ class MouseInputSystem extends EntityProcessingSystem {
     } else {
       opts.highlight = false;
     }
-    // print("Down: ${down}");
-    // print("Over: ${over}");
   }
   
   void handleMouseDown(MouseEvent event) {
@@ -56,14 +54,8 @@ class MouseInputSystem extends EntityProcessingSystem {
   }
 
   void handleMouseMove(MouseEvent event) {
-    x = event.client.x;
-    y = event.client.y;
-    
-    // print("Mouse pos: (${x}, ${y}");
-    /*
-    print("Event: ${event}");
-    print("Client: ${event.client}");
-    print("Type: ${event.type}");
-    */    
+    Rectangle canvasBounds = canvas.canvas.getBoundingClientRect();
+    x = event.client.x - canvasBounds.left;
+    y = event.client.y - canvasBounds.top;
   }
 }
