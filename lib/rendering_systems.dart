@@ -38,12 +38,10 @@ class NodeRenderingSystem extends EntityProcessingSystem {
   }
   
   void _renderText(Node node, bounds) {
-    num r = bounds.width * _roundingRatio;
-    
     canvas.save();
     _setNodeTextOptions();
     canvas..fillStyle = '#000000'
-        ..fillText(node.name, bounds.left + r  / 2, bounds.top + r / 2);
+        ..fillText(node.name, bounds.left, bounds.top);
     canvas.restore();
   }
 
