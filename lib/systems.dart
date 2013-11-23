@@ -4,6 +4,7 @@ class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<LayoutOptions> layoutMapper;
   ComponentMapper<Velocity> velocityMapper;
   MouseInputSystem mouseInputSystem;
+  Entity _dragged = null;
 
   MovementSystem(this.mouseInputSystem) : super(Aspect.getAspectForAllOf([LayoutOptions, Velocity]));
 
@@ -16,11 +17,18 @@ class MovementSystem extends EntityProcessingSystem {
     LayoutOptions position = layoutMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
-    if (!position.highlight) {
+    if (position.highlight) {
+      if (mouseInputSystem.down) {
+        if (_dragged == null || _dragged == entity) {
+          position.pos.x = mouseInputSystem.x;
+          position.pos.y = mouseInputSystem.y;          
+          _dragged = entity;
+        }
+      } else {
+        _dragged = null;
+      }
+    } else {
       position.pos.add(vel.vec * this.world.delta.toDouble());
-    } else if (mouseInputSystem.down) {
-      position.pos.x = mouseInputSystem.x;
-      position.pos.y = mouseInputSystem.y;
     }
   }
 }

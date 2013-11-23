@@ -30,7 +30,7 @@ class MouseInputSystem extends EntityProcessingSystem {
     CNode node = nodeMapper.get(entity);
     
     Point pointer = new Point(x.toDouble(), y.toDouble());
-    print("${opts.bounds}; ${pointer}");
+    // print("${opts.bounds}; ${pointer}");
     if (opts.bounds.containsPoint(pointer)) {
       opts.highlight = true;
     } else {
