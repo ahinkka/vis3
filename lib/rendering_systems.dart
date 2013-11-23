@@ -34,7 +34,9 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     _renderText(node, textBounds);
     canvas.restore();
     
-    opts.bounds = new Rectangle(bounds.left + x, bounds.top + y, bounds.width, bounds.height);
+    opts.bounds = new Rectangle(opts.pos.x - bounds.width / 2,
+        opts.pos.y - bounds.height / 2,
+        bounds.width, bounds.height);
   }
   
   void _renderText(Node node, bounds) {

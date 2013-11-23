@@ -3,8 +3,9 @@ part of vis3_entity_system;
 class MovementSystem extends EntityProcessingSystem {
   ComponentMapper<LayoutOptions> layoutMapper;
   ComponentMapper<Velocity> velocityMapper;
+  MouseInputSystem mouseInputSystem;
 
-  MovementSystem() : super(Aspect.getAspectForAllOf([LayoutOptions, Velocity]));
+  MovementSystem(this.mouseInputSystem) : super(Aspect.getAspectForAllOf([LayoutOptions, Velocity]));
 
   void initialize() {
     layoutMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
@@ -17,6 +18,9 @@ class MovementSystem extends EntityProcessingSystem {
     
     if (!position.highlight) {
       position.pos.add(vel.vec * this.world.delta.toDouble());
+    } else if (mouseInputSystem.down) {
+      position.pos.x = mouseInputSystem.x;
+      position.pos.y = mouseInputSystem.y;
     }
   }
 }

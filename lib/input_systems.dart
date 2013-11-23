@@ -9,8 +9,8 @@ class MouseInputSystem extends EntityProcessingSystem {
   
   bool down = false;
   bool over = false;
-  num x = -1;
-  num y = -1;
+  num x = 0;
+  num y = 0;
   
   MouseInputSystem(this.canvas) : super(Aspect.getAspectForAllOf([LayoutOptions, CNode]));
   
@@ -29,7 +29,8 @@ class MouseInputSystem extends EntityProcessingSystem {
     LayoutOptions opts = positionMapper.get(entity);
     CNode node = nodeMapper.get(entity);
     
-    Point pointer = new Point(x.toDouble(), y.toDouble()); 
+    Point pointer = new Point(x.toDouble(), y.toDouble());
+    print("${opts.bounds}; ${pointer}");
     if (opts.bounds.containsPoint(pointer)) {
       opts.highlight = true;
     } else {
@@ -55,7 +56,7 @@ class MouseInputSystem extends EntityProcessingSystem {
 
   void handleMouseMove(MouseEvent event) {
     Rectangle canvasBounds = canvas.canvas.getBoundingClientRect();
-    x = event.client.x - canvasBounds.left;
-    y = event.client.y - canvasBounds.top;
+    x = event.client.x - canvasBounds.left - canvasBounds.width / 2;
+    y = event.client.y - canvasBounds.top - canvasBounds.height / 2;
   }
 }

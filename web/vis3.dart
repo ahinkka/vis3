@@ -88,7 +88,9 @@ void main() {
   createEdge(spam, new Vector2(1.5, 1.5));
   createEdge(ham, new Vector2(2.5, 2.5));
   
-  _world.addSystem(new MovementSystem());
+  MouseInputSystem mis = new MouseInputSystem(canvas);
+  
+  _world.addSystem(new MovementSystem(mis));
   _world.addSystem(new RepulsionSystem());
   _world.addSystem(new SpringSystem());
   _world.addSystem(new ForceMovementSystem());
@@ -97,7 +99,7 @@ void main() {
   _world.addSystem(new EdgeRenderingSystem(canvas));
   _world.addSystem(new NodeRenderingSystem(canvas));
   
-  _world.addSystem(new MouseInputSystem(canvas));
+  _world.addSystem(mis);
   
   _world.initialize();
   
