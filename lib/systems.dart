@@ -15,11 +15,9 @@ class MovementSystem extends EntityProcessingSystem {
     LayoutOptions position = positionMapper.get(entity);
     Velocity vel = velocityMapper.get(entity);
     
-    // if (vel.vec.length < 0.025) {
-    //   return;
-    // }
-    
-    position.pos.add(vel.vec * this.world.delta.toDouble());
+    if (!position.highlight) {
+      position.pos.add(vel.vec * this.world.delta.toDouble());
+    }
   }
 }
 
