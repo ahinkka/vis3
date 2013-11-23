@@ -2,51 +2,69 @@ part of vis3_entity_system;
 
 class NodeRenderingSystem extends EntityProcessingSystem {
   CanvasQuery canvas;
+  static const num _roundingRatio = 1 / 3.5;
   
-  ComponentMapper<Position> positionMapper;
+  ComponentMapper<LayoutOptions> positionMapper;
   ComponentMapper<CNode> nodeMapper;
   
-  NodeRenderingSystem(this.canvas) : super(Aspect.getAspectForAllOf([Position, CNode]));
+  NodeRenderingSystem(this.canvas) : super(Aspect.getAspectForAllOf([LayoutOptions, CNode]));
   
   void initialize() {
-    positionMapper = new ComponentMapper<Position>(Position, world);
+    positionMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
     nodeMapper = new ComponentMapper<CNode>(CNode, world);
   }
   
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
+    LayoutOptions opts = positionMapper.get(entity);
     CNode cNode = nodeMapper.get(entity);
     Node node = cNode.node;
     
-    int centerX = canvas.canvas.width ~/ 2;
-    int centerY = canvas.canvas.height ~/2;
+    num centerX = canvas.canvas.width / 2;
+    num centerY = canvas.canvas.height /2;
     
-    int x = centerX + pos.vec.x.toInt();
-    int y = centerY + pos.vec.y.toInt();
-    
+    num x = centerX + opts.pos.x;
+    num y = centerY + opts.pos.y;
+
+    Rectangle textBounds = _textBounds(node, x, y);
     Rectangle bounds = _bounds(node, x, y);
-    _renderBackground(bounds);
-    _renderText(node, bounds);
+    
+    // print("Node: ${node.name}; pos: (${x}, ${y}");
+
+    canvas.save();
+    canvas.translate(x, y);
+    _renderBackground(bounds, opts.highlight);
+    _renderText(node, textBounds);
+    canvas.restore();
+    
+    opts.bounds = new Rectangle(bounds.left + x, bounds.top + y, bounds.width, bounds.height);
   }
   
-  void _renderText(Node node, Rectangle bounds) {
+  void _renderText(Node node, bounds) {
+    num r = bounds.width * _roundingRatio;
+    
     canvas.save();
     _setNodeTextOptions();
     canvas..fillStyle = '#000000'
-        ..fillText(node.name, bounds.left + _padding, bounds.top + _padding);
+        ..fillText(node.name, bounds.left + r  / 2, bounds.top + r / 2);
     canvas.restore();
   }
 
-  int _roundRadius = 15;
-  void _renderBackground(Rectangle bounds) {
-    int r = _roundRadius;
-    int left = bounds.left;
-    int right = bounds.left + bounds.width;
-    int top = bounds.top;
-    int bottom = bounds.top + bounds.height;
+  void _renderBackground(Rectangle bounds, highlight) {
+    num r = bounds.width * _roundingRatio;
+    num left = bounds.left;
+    num right = bounds.left + bounds.width;
+    num top = bounds.top;
+    num bottom = bounds.top + bounds.height;
+    
+    String fill;    
+    if (!highlight) {
+      fill = '#d3f7a9';
+    } else {
+      fill = '#cccccc';
+    }
     
     canvas.save();
-    canvas..fillStyle = '#d3f7a9'
+    canvas..fillStyle = fill
         ..beginPath()
         ..moveTo(left + r, top)
         ..lineTo(right - r, top)
@@ -62,19 +80,25 @@ class NodeRenderingSystem extends EntityProcessingSystem {
     canvas.restore();
   }
   
-  int _padding = 10;
-  Rectangle _bounds(Node node, int x, int y) {
+  Rectangle _textBounds(Node node, num x, num y) {
     canvas.save();
     _setNodeTextOptions();
-    Rectangle textBounds = canvas.textBoundaries(node.name);
+    Rectangle b = canvas.textBoundaries(node.name);
     canvas.restore();
     
-    int width = textBounds.width.toInt() + 2 * _padding;
-    int height = textBounds.height.toInt() + 2 * _padding;
+    return new Rectangle(-b.width / 2, -b.height / 2, b.width, b.height);
+  }
+  
+  Rectangle _bounds(Node node, num x, num y) {
+    Rectangle b = _textBounds(node, x, y);
     
-    int left = x - width ~/ 2;
-    int top = y - height ~/ 2;
-    return new Rectangle(left, top, width, height);
+    num r = b.width * _roundingRatio;
+    num left = -b.width / 2 - r;
+    num right = b.width / 2 + r;
+    num top = -b.height / 2 - r;
+    num bottom = b.height / 2 + r;
+
+    return new Rectangle(left, top, b.width + 2 * r, b.height + 2 * r);
   }
   
   void _setNodeTextOptions() {
@@ -88,31 +112,31 @@ class NodeRenderingSystem extends EntityProcessingSystem {
 class EdgeRenderingSystem extends EntityProcessingSystem {
   CanvasQuery canvas;
   
-  ComponentMapper<Position> positionMapper;
+  ComponentMapper<LayoutOptions> positionMapper;
   ComponentMapper<CEdge> edgeMapper;
   
-  EdgeRenderingSystem(this.canvas) : super(Aspect.getAspectForAllOf([Position, CEdge]));
+  EdgeRenderingSystem(this.canvas) : super(Aspect.getAspectForAllOf([LayoutOptions, CEdge]));
 
   void initialize() {
-    positionMapper = new ComponentMapper<Position>(Position, world);
+    positionMapper = new ComponentMapper<LayoutOptions>(LayoutOptions, world);
     edgeMapper = new ComponentMapper<CEdge>(CEdge, world);
   }
   
   void processEntity(Entity entity) {
-    Position pos = positionMapper.get(entity);
+    LayoutOptions pos = positionMapper.get(entity);
     CEdge cEdge = edgeMapper.get(entity);
     Edge edge = cEdge.edge;
     
     Entity from = edge.from.entity;
     Entity to = edge.to.entity;
 
-    Vector2 n1Pos = positionMapper.get(from).vec;
-    Vector2 n2Pos = positionMapper.get(to).vec;
+    Vector2 n1Pos = positionMapper.get(from).pos;
+    Vector2 n2Pos = positionMapper.get(to).pos;
 
     double centerX = canvas.canvas.width / 2;
     double centerY = canvas.canvas.height / 2;
     
-    _renderBezierVector(pos.vec + new Vector2(centerX, centerY),
+    _renderBezierVector(pos.pos + new Vector2(centerX, centerY),
         n1Pos + new Vector2(centerX, centerY),
         n2Pos + new Vector2(centerX, centerY));
   }

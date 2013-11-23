@@ -1,15 +1,18 @@
 part of vis3_entity_system;
 
-class Position extends ComponentPoolable {
-  Vector2 vec;
+class LayoutOptions extends ComponentPoolable {
+  Vector2 pos;
+  Rectangle bounds;
+  bool highlight = false;
 
-  Position._();
-  factory Position(Vector2 position) {
-    Position result = new Poolable.of(Position, _constructor);
-    result.vec = position;
+  LayoutOptions._();
+  factory LayoutOptions(Vector2 position) {
+    LayoutOptions result = new Poolable.of(LayoutOptions, _constructor);
+    result.pos = position;
+    result.bounds = new Rectangle(0, 0, 0, 0);
     return result;
   }
-  static Position _constructor() => new Position._();
+  static LayoutOptions _constructor() => new LayoutOptions._();
 }
 
 

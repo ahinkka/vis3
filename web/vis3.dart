@@ -31,12 +31,12 @@ void gameLoop([num now]) {
   // TODO: use window.animationFrame only when something's moving
   window.animationFrame.then(gameLoop);
   // TODO: use Timer when something isn't moving
-  // Timer t = new Timer(const Duration(milliseconds: 100), gameLoop);
+  // Timer t = new Timer(const Duration(milliseconds: 80), gameLoop);
 }
 
 void createNode(Node node, Vector2 pos) {
   Entity result = _world.createEntity();
-  result.addComponent(new Position(pos));
+  result.addComponent(new LayoutOptions(pos));
   result.addComponent(new Velocity(new Vector2(0.0, 0.0)));
   result.addComponent(new Force(new Vector2(0.0, 0.0)));
   result.addComponent(new Weight(5.0));
@@ -47,7 +47,7 @@ void createNode(Node node, Vector2 pos) {
 
 void createEdge(Edge edge, Vector2 pos) {
   Entity result = _world.createEntity();
-  result.addComponent(new Position(pos));
+  result.addComponent(new LayoutOptions(pos));
   result.addComponent(new Velocity(new Vector2(0.0, 0.0)));
   result.addComponent(new Force(new Vector2(0.0, 0.0)));
   result.addComponent(new Weight(2.0));
@@ -96,6 +96,9 @@ void main() {
   _world.addSystem(new BackgroundRenderingSystem(canvas));
   _world.addSystem(new EdgeRenderingSystem(canvas));
   _world.addSystem(new NodeRenderingSystem(canvas));
+  
+  _world.addSystem(new MouseInputSystem(canvas));
+  
   _world.initialize();
   
 
