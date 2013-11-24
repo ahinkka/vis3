@@ -13,10 +13,6 @@ packages:
     description: dartemis
     source: hosted
     version: "0.5.1"
-  game_loop:
-    description: game_loop
-    source: hosted
-    version: "0.9.3"
   vector_math:
     description: vector_math
     source: hosted

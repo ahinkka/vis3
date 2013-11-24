@@ -4,5 +4,4 @@ dependencies:
   browser: any
   canvas_query: any
   dartemis: any
-  game_loop: any
   vector_math: any
